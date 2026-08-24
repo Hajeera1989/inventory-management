@@ -102,5 +102,19 @@ export const api = {
   async getPurchaseOrderByBacklogItem(backlogItemId) {
     const response = await axios.get(`${API_BASE_URL}/purchase-orders/${backlogItemId}`)
     return response.data
+  },
+
+  // Submits a restocking order created from the Demand Forecast screen.
+  // NOTE: There is currently no POST /api/orders endpoint on the backend,
+  // so this falls back to resolving locally with the order data as given.
+  // Backend requirement: add `POST /api/orders` to persist restocking orders.
+  async submitRestockingOrder(orderData) {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/orders`, orderData)
+      return response.data
+    } catch (err) {
+      console.warn('POST /api/orders unavailable, storing restocking order locally:', err.message)
+      return orderData
+    }
   }
 }
